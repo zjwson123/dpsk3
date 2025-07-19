@@ -447,21 +447,22 @@ function startDefectDetection() {
         if (data.success) {
             $activeItem.find('.badge').removeClass('bg-secondary')
                        .addClass('bg-success').text('已检测');
-            alert('病害检测已完成！');
+            // 移除弹框提示 - alert('病害检测已完成！');
 
             // 重新加载检测结果
             loadInspectionResults(inspectionId);
         } else {
             $activeItem.find('.badge').removeClass('bg-secondary')
                        .addClass('bg-warning').text('检测失败');
-            alert('检测失败: ' + (data.message || '未知错误'));
+            // 移除弹框提示，保留控制台日志用于调试
+            console.error('检测失败:', data.message || '未知错误');
         }
     })
     .catch(error => {
         console.error('检测过程中出错:', error);
         $activeItem.find('.badge').removeClass('bg-secondary')
                    .addClass('bg-warning').text('检测失败');
-        alert('检测过程中出错: ' + error.message);
+        // 移除弹框提示，错误信息已在控制台显示
     })
     .finally(() => {
         $('#detect-defect-btn').prop('disabled', false).text('病害检测');
