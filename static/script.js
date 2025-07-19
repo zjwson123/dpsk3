@@ -1,5 +1,5 @@
 // 全局变量
-let defectDistributionChart = null;
+//let defectDistributionChart = null;
 let highFrequencyChart = null;
 // 全局变量
 let currentProjectId = null;
@@ -167,17 +167,18 @@ async function loadInspectionResults(inspectionId) {
         }
 
         // 更新数据
-        //defectRecords = data.data.records;
         defectRecords = data.data.records.map(record => {
-            // 可以在这里对路径进行额外处理
             return {
                 ...record,
-                // 确保路径是正确的格式
                 image_path: record.image_path || record.image_name
             };
         });
+
         updateDefectStatistics(data.data);
         updateDefectRecordsList(defectRecords);
+
+        // 更新病害分布图表
+        updateDefectDistributionChart(defectRecords);
 
         // 如果有数据则开始轮播
         if (defectRecords.length > 0) {
@@ -524,27 +525,173 @@ function updatainspectionInfo(inspectionsData) {
     }
 }
 
+// 全局变量
+let defectDistributionChart = null;
 
+// 初始化或更新图表
+function initCharts(projectId) {
+    // 初始化病害分布图表
+    initDefectDistributionChart();
 
+    // 初始化高发区域图表（如果已有）
+    if (highFrequencyChart) {
+        highFrequencyChart.destroy();
+        highFrequencyChart = null;
+    }
+}
 
+// 初始化病害分布图表
+function initDefectDistributionChart() {
+    const ctx = document.getElementById('defect-distribution-chart').getContext('2d');
 
+    // 如果图表已存在，先销毁
+    if (defectDistributionChart) {
+        defectDistributionChart.destroy();
+    }
 
+    // 创建新图表
+    defectDistributionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [],
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false, // 完全隐藏默认图例
+                    position: 'none'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            // 添加额外的配置来确保图例不显示
+            layout: {
+                padding: 0
+            }
+        }
+    });
+}
 
+// 更新病害分布图表
+function updateDefectDistributionChart(records) {
+    if (!defectDistributionChart) return;
 
+    // 统计各类病害的数量
+    const defectCount = {};
+    records.forEach(record => {
+        const defectType = record.defect_type || '未知';
+        defectCount[defectType] = (defectCount[defectType] || 0) + 1;
+    });
 
+    // 定义颜色映射（与后端保存的颜色一致）
+    const colorMapping = {
+        'Reinforcement exposure': 'rgba(0, 255, 0, 0.8)',
+        'Missing edges and corners': 'rgba(0, 0, 255, 0.8)',
+        'Faulted slabs': 'rgba(255, 0, 0, 0.8)',
+        'Grout leakage': 'rgba(10, 255, 255, 0.8)',
+        'Crack or leakage': 'rgba(255, 0, 255, 0.8)',
+        'Honeycomb': 'rgba(255, 255, 0, 0.8)',
+        'Blowhole': 'rgba(150, 0, 50, 0.8)',
+        '未知': 'rgba(150, 150, 150, 0.8)'
+    };
 
+    // 准备图表数据
+    const labels = [];
+    const data = [];
+    const backgroundColors = [];
 
+    Object.entries(defectCount).forEach(([defectType, count]) => {
+        labels.push(defectType);
+        data.push(count);
+        backgroundColors.push(colorMapping[defectType] || colorMapping['未知']);
+    });
 
+    // 更新图表数据
+    defectDistributionChart.data.labels = labels;
+    defectDistributionChart.data.datasets[0].data = data;
+    defectDistributionChart.data.datasets[0].backgroundColor = backgroundColors;
 
+    // 更新自定义图例
+    updateChartLegend(labels, data, backgroundColors);
 
+    // 更新图表
+    defectDistributionChart.update();
+}
 
+// 更新自定义图例
+function updateChartLegend(labels, data, colors) {
+    const legendContainer = document.getElementById('chart-legend');
+    if (!legendContainer) return;
 
+    // 计算总数和百分比
+    const total = data.reduce((sum, count) => sum + count, 0);
 
+    // 生成图例HTML
+    let legendHTML = ' ';
 
+    labels.forEach((label, index) => {
+        const count = data[index];
+        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+        const color = colors[index];
 
+        legendHTML += `
+            <div class="legend-item" onclick="toggleLegendItem(${index})">
+                <div class="legend-color" style="background-color: ${color};"></div>
+                <div class="legend-label" title="${label}">${label}</div>
+                <div class="legend-value">${count} (${percentage}%)</div>
+            </div>
+        `;
+    });
 
+    // 添加总数显示
+//    legendHTML += `
+//        <div class="legend-total">
+//            <div>总病害数: <strong>${total}</strong></div>
+//            <div>病害图像: <strong>${defectRecords.length}</strong> 张</div>
+//        </div>
+//    `;
 
+    legendContainer.innerHTML = legendHTML;
+}
 
+// 添加图例项点击切换功能
+function toggleLegendItem(index) {
+    if (!defectDistributionChart) return;
+
+    const meta = defectDistributionChart.getDatasetMeta(0);
+    const item = meta.data[index];
+
+    // 切换隐藏状态
+    if (item.hidden) {
+        item.hidden = false;
+    } else {
+        item.hidden = true;
+    }
+
+    defectDistributionChart.update();
+}
 
 
 // 更新项目统计信息
@@ -558,13 +705,20 @@ function updateProjectStats(statsData) {
 // 初始化图表
 function initCharts(projectId) {
     // 示例数据 - 实际应从API获取
+//    const mockDefectData = {
+//        labels: ['裂缝', '蜂窝', '露筋', '空洞', '其他'],
+//        datasets: [{
+//            data: [35, 25, 20, 15, 5],
+//            backgroundColor: [
+//                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+//            ]
+//        }]
+//    };
     const mockDefectData = {
-        labels: ['裂缝', '蜂窝', '露筋', '空洞', '其他'],
+        labels: [],
         datasets: [{
-            data: [35, 25, 20, 15, 5],
-            backgroundColor: [
-                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
-            ]
+            data: [],
+            backgroundColor: []
         }]
     };
 
@@ -573,7 +727,9 @@ function initCharts(projectId) {
         datasets: [{
             label: '病害数量',
             data: [42, 35, 28, 15, 10],
-            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+            backgroundColor: [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+            ]
         }]
     };
 
