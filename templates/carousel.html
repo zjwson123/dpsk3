@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>巡检图片浏览 - {{ inspection.inspection_name.replace('_', '/') }}</h2>
+    <a href="{{ url_for('project_inspections', project_id=inspection.project.id) }}" class="btn btn-secondary">
+        返回巡检列表
+    </a>
+</div>
+
+<div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        {% for i in range(images|length) %}
+        <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="{{ i }}" 
+                {% if loop.first %}class="active" aria-current="true"{% endif %} 
+                aria-label="Slide {{ i+1 }}"></button>
+        {% endfor %}
+    </div>
+    
+    <div class="carousel-inner">
+        {% for image in images %}
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+            <img src="{{ url_for('project_files', filename=image.image_relative_path.replace('Projects/', '').replace('\\', '/')) }}"
+                 class="d-block w-100 carousel-img" alt="{{ image.image_name }}">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>{{ image.image_name }}</h5>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<div class="mt-3">
+    <p class="text-muted">使用左右箭头键或屏幕上的导航按钮浏览图片</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 启用键盘左右键控制
+    document.addEventListener('keydown', function(event) {
+        const carousel = document.getElementById('imageCarousel');
+        if (event.key === 'ArrowLeft') {
+            const prevBtn = carousel.querySelector('.carousel-control-prev');
+            prevBtn.click();
+        } else if (event.key === 'ArrowRight') {
+            const nextBtn = carousel.querySelector('.carousel-control-next');
+            nextBtn.click();
+        }
+    });
+</script>
+{% endblock %}

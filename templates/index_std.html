@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>混凝土质量缺陷检测平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+<!-- 科技感装饰 -->
+<div class="tech-grid"></div>
+<div class="tech-pulse"></div>
+
+<div class="d-flex">
+    <!-- 左侧项目列表 -->
+    <div id="project-sidebar">
+        <div class="sidebar-header">
+            <h5 class="mb-0"><i class="fas fa-project-diagram"></i> <span>项目列表</span></h5>
+            <button id="toggleSidebar" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div id="project-list" data-needs-refresh="false">
+            {% if projects %}
+            {% for project in projects %}
+            <div class="project-item" data-project-id="{{ project.id }}">
+                <div class="project-info">
+                    <h6>{{ project.project_short_name }}</h6>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="text-muted p-3">暂无项目</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div id="main-content" class="flex-grow-1">
+        <!-- 主标题 -->
+        <div class="main-header">
+            <h1><i class="fas fa-hard-hat"></i> 混凝土质量缺陷检测平台</h1>
+        </div>
+
+        <!-- 主体三列布局 -->
+        <div class="dashboard-container">
+            <!-- 左侧列 -->
+            <div class="dashboard-column left-column " style="height: 100%; flex: 0.75;">
+                <!-- 项目概况 -->
+                <div class="dashboard-card" style="flex: 0.65;">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle"></i> 项目概况
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <!-- 第一行：项目名称（占满整行） -->
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <div class="info-label">项目名称</div>
+                                <div class="info-value" id="project_full_name">-</div>
+                            </div>
+
+                            <!-- 第二行：施工单位（占满整行） -->
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <div class="info-label">施工单位</div>
+                                <div class="info-value" id="builder_name">-</div>
+                            </div>
+
+                            <!-- 第三行：建筑面积和总工期（保持两列） -->
+                            <div class="info-item">
+                                <div class="info-label">建筑面积 (m²)</div>
+                                <div class="info-value" id="total_area">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">总工期 (天)</div>
+                                <div class="info-value" id="duration">-</div>
+                            </div>
+
+                            <!-- 第四行：总进度（占满整行并添加进度条） -->
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <div class="progress-header">
+                                    <div class="info-label">总进度 (%)</div>
+                                    <div class="info-value" id="advance_rate">-</div>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" id="progress_bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 巡检概况 -->
+                <div class="dashboard-card" style="display: flex; flex-direction: column; height: 50%;">
+                    <div class="card-header">
+                        <i class="fas fa-clipboard-check"></i> 巡检概况
+                    </div>
+                    <div class="card-body" style="flex: 0.15;">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">巡检总次数 </div>
+                                <div class="info-value" id="inspection_num">-</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">最近巡检时间 </div>
+                                <div class="info-value" id="inspection_last_time">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+                        <div class="list-container" style="flex: 1; overflow-y: auto; margin-bottom: 10px;">
+                            <div class="list-group" id="inspection-list">
+                                <!-- 动态生成列表项（不再依赖后端模板） -->
+                            </div>
+                        </div>
+                        <!-- 底部按钮 -->
+                        <div class="action-buttons" style="text-align: center;">
+                            <input type="hidden" id="selected-inspection-id" value="">
+                            <button
+                                    id="detect-defect-btn"
+                                    class="btn btn-primary"
+                                    style="padding: 8px 16px;"
+                                    disabled
+                                    onclick="startDefectDetection()"
+                            >
+                                病害检测
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间列 -->
+            <div class="dashboard-column middle-column">
+                <div class="stats-transparent">
+                    <div class="defect-stats">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="total-images-stat">0</div>
+                                <div class="stat-label">图像总数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="defect-images-count">0</div>
+                                <div class="stat-label">病害图像</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="total-defects-count">0</div>
+                                <div class="stat-label">病害总数</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-image"></i> 病害图像
+                    </div>
+                    <div class="card-body image-details-container">
+                        <div class="row g-0 h-100">
+                            <!-- 左侧图像区域 -->
+                            <div class="col-md-8 d-flex flex-column h-100">
+                                <div class="defect-image-wrapper flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <img
+                                            id="defect-image"
+                                            class="defect-image"
+                                            src="https://images.unsplash.com/photo-1543857778-c4a1a569e7bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                            alt="病害图像"
+                                            onerror="this.src='/static/imgs/default.png'; this.onerror=null;"
+                                    >
+                                </div>
+                                <div class="image-counter text-center py-2">
+                                    <span id="current-image-index">0</span> / <span id="image-total-count">0</span>
+                                </div>
+                            </div>
+
+                            <!-- 右侧详情面板 -->
+                            <div id="defect-details-sidebar" class="col-md-4 d-none">
+                                <div class="h-100 d-flex flex-column tech-details-panel">
+                                    <div class="details-header p-3 border-bottom">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle"></i> 病害详情</h6>
+                                    </div>
+                                    <div class="details-content flex-grow-1 p-3 overflow-auto">
+                                        <!-- 详情内容通过JS动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 修改病害记录区域 -->
+                    <div class="card-footer defect-records">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0"><i class="fas fa-list"></i> 病害记录</h6>
+                            <div class="text-muted small">
+                                共 <span id="record-count">0</span> 条记录 |
+                                点击记录查看详情
+                            </div>
+                        </div>
+                        <div class="records-header d-none d-md-flex py-2 px-3 bg-dark rounded-top">
+                            <div class="flex-grow-1">图片名称</div>
+                            <div class="text-center" style="width: 100px; margin-left: -80px;">病害类型</div>
+                            <div class="text-center" style="width: 120px; margin-left: -20px;">病害位置</div>
+                            <div class="text-center" style="width: 100px;">检测时间</div>
+                        </div>
+                        <div id="defect-records-list" class="records-container">
+                            <!-- 病害记录将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--                &lt;!&ndash; 病害分布占比 &ndash;&gt;-->
+            <!--                <div class="dashboard-card">-->
+            <!--                    <div class="card-header">-->
+            <!--                        <i class="fas fa-chart-pie"></i> 病害分布占比-->
+            <!--                    </div>-->
+            <!--                    <div class="card-body">-->
+            <!--                        <div class="chart-container">-->
+            <!--                            <canvas id="defect-distribution-chart"></canvas>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!-- 右侧列 -->
+            <div class="dashboard-column right-column">
+                <!-- 病害概况 -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-bug"></i> 病害概况
+                    </div>
+                    <div class="card-body">
+                        <div id="defect-types-list">
+                            <!-- 病害类型列表将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 病害高发区域 -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <i class="fas fa-map-marked-alt"></i> 病害高发区域
+                    </div>
+                    <div class="card-body">
+                        <div class="bar-chart-container">
+                            <canvas id="high-frequency-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../static/script.js"></script>
+</body>
+</html>

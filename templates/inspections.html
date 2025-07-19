@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">{{ project.project_short_name }} - 巡检记录</h2>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">返回项目列表</a>
+
+<div class="list-group">
+    {% for inspection in inspections %}
+    <a href="{{ url_for('inspection_images', inspection_id=inspection.id) }}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">巡检时间: {{ inspection.inspection_name.replace('_', '/') }}</h5>
+            <small>图片数量: {{ inspection.img_num }}</small>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

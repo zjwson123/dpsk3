@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">项目列表</h2>
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.project_short_name }}</h5>
+                <p class="card-text">
+                    <strong>全称:</strong> {{ project.project_full_name }}<br>
+                    <strong>施工单位:</strong> {{ project.builder_name }}<br>
+                    <strong>进度:</strong> {{ project.advance_rate }}%
+                </p>
+                <a href="{{ url_for('project_inspections', project_id=project.id) }}" class="btn btn-primary">
+                    查看巡检记录
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

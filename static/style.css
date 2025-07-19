@@ -1,0 +1,888 @@
+:root {
+    --primary-blue: rgba(0, 123, 255, 0.7);
+    --neon-blue: rgba(0, 195, 255, 0.8);
+    --dark-bg: rgba(15, 23, 42, 0.85);
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(64, 158, 255, 0.3);
+}
+
+body {
+    background:
+        radial-gradient(circle at center, rgba(8, 22, 48, 0.9) 0%, rgba(4, 12, 24, 0.95) 100%),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23081424"/><path d="M0 100 L200 100 M100 0 L100 200" stroke="%230d2b50" stroke-width="0.5"/><circle cx="100" cy="100" r="30" stroke="%230d2b50" stroke-width="0.5" fill="none"/><circle cx="100" cy="100" r="60" stroke="%230d2b50" stroke-width="0.5" fill="none"/></svg>');
+    background-size: cover;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.tech-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(64, 158, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(64, 158, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.tech-pulse {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--neon-blue);
+    box-shadow: 0 0 15px 5px var(--neon-blue);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
+
+#project-sidebar {
+    background: var(--dark-bg);
+    width: 180px;
+    height: 100vh;
+    border-right: 1px solid var(--border-color);
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
+    transition: all 0.3s ease;
+    z-index: 100;
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+#project-sidebar.collapsed {
+    width: 50px;
+}
+
+#project-sidebar.collapsed .sidebar-header h5,
+#project-sidebar.collapsed .project-item span {
+    display: none;
+}
+
+.sidebar-header {
+    padding: 15px 10px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-item {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(64, 158, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.project-item:hover {
+    background: rgba(30, 64, 128, 0.5);
+}
+
+.project-item.active {
+    background: rgba(30, 64, 128, 0.8);
+    border-left: 3px solid var(--neon-blue);
+}
+
+#main-content {
+    margin-left: 180px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease;
+}
+
+#main-content.expanded {
+    margin-left: 50px;
+    width: calc(100% - 50px);
+}
+
+.main-header {
+    background: var(--dark-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 5px 20px;
+    text-align: center;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    background: linear-gradient(90deg, #4cc9f0, #4361ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(76, 201, 240, 0.3);
+}
+
+.dashboard-container {
+    display: flex;
+    height: calc(100vh - 50px);
+    gap: 10px;
+    padding: 10px;
+    overflow: hidden;
+    flex-wrap: nowrap;
+}
+
+.dashboard-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+}
+
+.left-column, .right-column {
+    flex: 1;
+    min-width: 200px;
+}
+
+.middle-column {
+    flex: 1.5;
+    min-width: 400px;
+}
+
+.dashboard-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* 修改病害概况卡片的高度 */
+.right-column .dashboard-card:first-child {
+    flex: 1.0; /* 增加高度比例 */
+}
+
+/* 修改病害高发区域卡片的高度 */
+.right-column .dashboard-card:last-child {
+    flex: 1; /* 减少高度比例 */
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 0 15px rgba(64, 158, 255, 0.5);
+}
+
+.card-header {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    background: rgba(15, 23, 42, 0.5);
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.card-header i {
+    margin-right: 8px;
+    color: #4cc9f0;
+}
+
+.card-body {
+    padding: 10px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.info-item {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 3px;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background-color: #334155;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #22c55e;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+
+
+.distribution-container {
+    justify-content: left;
+    align-items: center;
+    height: 100%;
+    width: 50%;
+}
+
+
+
+.defect-records {
+    height: 30%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.records-header {
+    display: flex;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.inspection-header {
+    display: flex;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.inspection-header div {
+    flex: 1;
+    text-align: left;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 5px;
+}
+
+.records-header div {
+    flex: 1;
+    text-align: left;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 5px;
+}
+
+.records-container {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.record-item {
+    display: flex;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.record-item > div {
+    flex: 1;
+    text-align: left;
+    padding: 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.record-item:hover {
+    background: rgba(30, 64, 128, 0.3);
+}
+
+.record-item.active {
+    background: rgba(30, 64, 128, 0.6);
+    border-left: 3px solid var(--neon-blue);
+}
+
+.defect-type-item {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.defect-type-item:hover {
+    background: rgba(30, 64, 128, 0.5);
+}
+
+.defect-type-item.active {
+    background: rgba(30, 64, 128, 0.8);
+    border-left: 3px solid var(--neon-blue);
+}
+
+.defect-count {
+    background: var(--primary-blue);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
+.bar-chart-container {
+    height: 100%;
+    padding: 10px;
+}
+
+.toggle-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: #e2e8f0;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+.toggle-btn:hover {
+    background: rgba(64, 158, 255, 0.2);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-blue);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 123, 255, 0.9);
+}
+
+.sidebar {
+    width: 300px;
+    height: 100vh;
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    transition: all 0.3s;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.sidebar-content {
+    padding: 15px;
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+}
+
+.project-item {
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.project-item:hover {
+    transform: translateY(-3px);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+}
+
+/* 列表容器样式（可选） */
+#inspection-list {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 列表项默认状态 */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0;
+    padding: 16px 16px;
+    transition: all 0.2s ease;
+    background: rgba(30, 64, 128, 0.3);
+    color: #fff;
+}
+
+/* 最后一个列表项去掉边框 */
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* 悬停效果 */
+.list-group-item:not(.active):hover {
+    background-color: #66ccff;
+    transform: translateX(4px);
+}
+
+/* 选中状态（高亮 + 阴影 + 动画） */
+.list-group-item.active {
+    background-color: #66ccff;
+    border-left: 4px solid #2196F3;
+    color: #66ccff;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+    transform: scale(1.02);
+}
+
+/* 点击动画（可选） */
+.list-group-item:active {
+    transform: scale(0.98);
+}
+
+/* 标题和副标题样式优化 */
+.list-group-item h5 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.list-group-item small {
+    color: #78909c;
+    font-size: 13px;
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 0.3em 0.6em;
+}
+
+.btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* 病害图像容器 */
+
+.image-counter {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+/* 统计信息网格 */
+.stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 75px;
+        max-width: 1000px;
+        margin: 0 auto;
+}
+
+.stat-item {
+        background: rgba(16, 31, 63, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 25px 15px;
+        text-align: center;
+        box-shadow:
+            0 0 15px rgba(0, 150, 255, 0.3),
+            inset 0 0 20px rgba(0, 150, 255, 0.1);
+        border: 1px solid rgba(0, 150, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+    .stat-item:hover {
+        transform: translateY(-8px);
+        box-shadow:
+            0 8px 25px rgba(0, 150, 255, 0.4),
+            inset 0 0 30px rgba(0, 150, 255, 0.2);
+        background: rgba(16, 31, 63, 0.8);
+    }
+
+    /* 科技感装饰元素 */
+    .stat-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg,
+            #00f2fe 0%,
+            #4facfe 30%,
+            #a6c1ee 70%,
+            #00f2fe 100%);
+        background-size: 200% auto;
+        animation: gradientFlow 3s linear infinite;
+    }
+
+    .stat-item::after {
+        content: '';
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: rgba(0, 150, 255, 0.1);
+        border-radius: 50%;
+        top: -30px;
+        right: -30px;
+    }
+
+    .stat-value {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #00f2fe;
+        margin-bottom: 12px;
+        text-shadow:
+            0 0 10px rgba(0, 150, 255, 0.5),
+            0 0 20px rgba(0, 150, 255, 0.3);
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-label {
+        font-size: 0.95rem;
+        color: #a6c1ee;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        font-weight: 500;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 动画效果 */
+    @keyframes gradientFlow {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+
+/* 发现记录 */
+
+
+
+
+/* 病害记录项样式 */
+.hover-highlight:hover {
+    background-color: #e9ecef;
+}
+
+/* 病害详情区域 */
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+    .defect-stats .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .defect-stats .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .records-header {
+        display: none !important;
+    }
+
+    .record-item > div {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .record-item > div > div {
+        margin-bottom: 5px;
+    }
+
+    .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+        }
+}
+
+/* 确保文字过长时显示省略号 */
+.text-truncate {
+    max-width: 100%;
+    display: inline-block;
+}
+
+.flex-basis-25 {
+    flex-basis: 25%;
+}
+
+/* 透明背景的统计区域 */
+.stats-transparent {
+    margin-bottom: 20px;
+    padding: 0; /* 移除内边距 */
+}
+
+.stats-transparent .defect-stats {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0;
+}
+
+.stats-transparent .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stats-transparent .stat-item {
+    background: rgba(0, 150, 255, 0.1); /* 半透明背景 */
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid rgba(0, 150, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.stats-transparent .stat-item:hover {
+    background: rgba(0, 150, 255, 0.2);
+}
+
+.stats-transparent .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #00f2fe;
+}
+
+.stats-transparent .stat-label {
+    font-size: 0.9rem;
+    color: #a8d8ea;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 图像与详情并排布局 */
+/* 图像与详情容器 */
+.image-details-container {
+    height: 520px; /* 增加高度以适应详情面板 */
+    background: rgba(16, 31, 63, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* 左侧图像区域 */
+.defect-image-wrapper {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 15px;
+    min-height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.defect-image {
+    max-width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
+    border: 1px solid rgba(0, 150, 255, 0.2);
+}
+
+/* 右侧详情面板 */
+.tech-details-panel {
+    background: rgba(16, 31, 63, 0.8);
+    backdrop-filter: blur(8px);
+    border-left: 1px solid rgba(0, 150, 255, 0.3);
+    height: 100%;
+}
+
+.details-header {
+    background: rgba(0, 150, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 150, 255, 0.3);
+    color: #a5d8ff;
+    font-weight: 500;
+}
+
+.details-header h6 {
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+.details-header i {
+    color: #00f2fe;
+    margin-right: 8px;
+}
+
+.details-content {
+    background: transparent;
+    color: #e2e8f0;
+}
+
+/* 详情内容样式 */
+.detail-group {
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+}
+
+.detail-group:last-child {
+    margin-bottom: -5px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.detail-group-title {
+    font-size: 0.85rem;
+    color: #a5d8ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.detail-group-title i {
+    margin-right:4px;
+    color: #00f2fe;
+    font-size: 0.8rem;
+}
+
+.detail-item {
+    margin-bottom: 12px;
+}
+
+.detail-label {
+    font-weight: 500;
+    color: #78909c;
+    font-size: 0.75rem;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    color: #e2e8f0;
+    background: rgba(0, 150, 255, 0.1);
+    padding: 8px 10px;
+    border-radius: 4px;
+    word-break: break-word;
+    border: 1px solid rgba(0, 150, 255, 0.2);
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.detail-value:hover {
+    background: rgba(0, 150, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(0, 150, 255, 0.2);
+}
+
+/* 科技感装饰元素 */
+.details-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 2px;
+    height: 30%;
+    background: linear-gradient(to bottom,
+        transparent,
+        rgba(0, 150, 255, 0.5),
+        transparent);
+    transform: translateY(-50%);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .image-details-container {
+        height: auto;
+    }
+
+    #defect-details-sidebar {
+        border-left: none;
+        border-top: 1px solid rgba(0, 150, 255, 0.3);
+    }
+
+    .tech-details-panel {
+        border-left: none;
+    }
+
+    .defect-image-wrapper {
+        min-height: 300px;
+    }
+}
