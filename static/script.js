@@ -780,3 +780,46 @@ function resizeCharts() {
     if (defectDistributionChart) defectDistributionChart.resize();
     if (highFrequencyChart) highFrequencyChart.resize();
 }
+
+// 强力移除饼状图图例的函数 - 永久解决方案
+function permanentRemovePieChartLegend() {
+    // 移除所有可能的图例元素
+    const selectors = [
+        '.pie-chart-container ul',
+        '.pie-chart-container ol', 
+        '.pie-chart-container > div:not(canvas):not(.custom-legend-container)',
+        '.dashboard-card .chartjs-legend',
+        '.distribution-container ul:not(.custom-legend)',
+        '.distribution-container ol:not(.custom-legend)',
+        '.pie-chart-container .chartjs-legend',
+        '.pie-chart-container .chart-legend'
+    ];
+    
+    selectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            if (el && !el.classList.contains('custom-legend-container')) {
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                el.style.opacity = '0';
+                el.style.height = '0';
+                el.style.width = '0';
+                el.remove();
+            }
+        });
+    });
+}
+
+// 页面加载完成后执行图例移除
+document.addEventListener('DOMContentLoaded', function() {
+    // 延迟执行，确保图表已渲染
+    setTimeout(permanentRemovePieChartLegend, 500);
+    
+    // 定期检查并移除图例
+    setInterval(permanentRemovePieChartLegend, 2000);
+});
+
+// 监听图表更新事件
+if (typeof Chart !== 'undefined') {
+    Chart.defaults.plugins.legend.display = false;
+}

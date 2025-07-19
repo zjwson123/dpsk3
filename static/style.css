@@ -938,6 +938,22 @@ body {
     width: 100%;
 }
 
+/* 强制隐藏Chart.js默认图例 */
+#defect-distribution-chart + .chartjs-legend,
+.chartjs-legend {
+    display: none !important;
+}
+
+/* 隐藏可能出现在canvas上方的图例 */
+.pie-chart-container .chartjs-legend {
+    display: none !important;
+}
+
+/* 确保饼图容器内没有额外的图例元素 */
+.pie-chart-container > div:not(canvas) {
+    display: none !important;
+}
+
 .pie-chart-container {
     position: relative;
     min-width: 250px;
@@ -1017,4 +1033,39 @@ body {
 
 .custom-legend .legend-total strong {
     color: #00f2fe;
+}
+
+/* 最强力的饼状图图例隐藏规则 - 永久解决方案 */
+.pie-chart-container ul,
+.pie-chart-container ol,
+.pie-chart-container > div:not(canvas):not(.custom-legend-container),
+.dashboard-card .chartjs-legend,
+.distribution-container ul:not(.custom-legend),
+.distribution-container ol:not(.custom-legend),
+.distribution-container > div:not(.pie-chart-container):not(.custom-legend-container),
+.pie-chart-container .chartjs-legend,
+.pie-chart-container .chart-legend,
+.pie-chart-container canvas + .chartjs-legend,
+.distribution-container .chartjs-legend:not(.custom-legend),
+#defect-distribution-chart + .chartjs-legend {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+}
+
+/* 确保饼状图容器只显示canvas和自定义图例 */
+.distribution-container {
+    overflow: hidden !important;
+}
+
+/* 强制隐藏饼状图容器内的非canvas元素 */
+.pie-chart-container > *:not(canvas):not(.custom-legend-container) {
+    display: none !important;
+    visibility: hidden !important;
 }
