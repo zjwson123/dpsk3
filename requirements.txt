@@ -1,0 +1,7 @@
+flask
+flask_sqlalchemy
+flask_mysqldb
+pymysql
+ultralytics
+opencv-python
+piexif
