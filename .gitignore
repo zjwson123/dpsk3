@@ -1,6 +1,8 @@
 .DS_Store
 .venv
 __pycache__
+__pycache__/*.pyc
+__pycache__/config.cpython-313.pyc
 *.pyc
 *.pyo
 *.pyd
@@ -8,5 +10,6 @@ __pycache__
 *.pyz
 *.pywz
 *.pyzw
+*.log
 
 Projects/XX*/inspection/**
